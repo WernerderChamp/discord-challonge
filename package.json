@@ -1,0 +1,15 @@
+{
+  "name": "discord-challonge",
+  "version": "1.0.0",
+  "description": "Allows participants to report their score via discord",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Challonge",
+    "Discord"
+  ],
+  "author": "Werner der Champ",
+  "license": "ISC"
+}
