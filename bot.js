@@ -2,7 +2,7 @@ const challonge = require('challonge');
 const Discord = require("discord.js");
 const bot = new Discord.Client();
 var moment = require('moment');
-
+const config = require("./config.json");
 const tournament = challonge.createClient({
   apiKey: config.challonge
 });
@@ -26,7 +26,6 @@ bot.on("disconnect", (evt) => {
 
 bot.on("message", message => {
   //If bot has a new message
-	msg_count++;
 	if (message.author.bot) return;//ignore bots
 	if (!message.content.startsWith(config.prefix)) return;//ignore messages that don't start with prefix
 	var time = moment().valueOf();
@@ -37,5 +36,35 @@ bot.on("message", message => {
 
 	let args = message.content.split(" ").slice(1);
 
+  if(command==="help"){
+    //help
+  } else
+  if (command==="log"){
+    if(isNaN(args[0])||isNaN(args[1])) return message.send("Use *log <stars> <percentage>");
+    var stars=parseInt(args[0]);
+    var percentage=parseInt(args[1]);
+    //Discord Message Collector waits for another message in this channel
+    message.channel.send("Is this your best attack?\n"+stars+" Stars and "+percentage+" Percent? (y/n)")
+    var collector = message.channel.createCollector(
+      m => m.author.id==message.author.id,
+      {time: 90000});//Automaticly quits after 90 seconds
+    collector.on('collect', m =>{
+      if (m.content==="y") {
+        //log results
+        collector.stop(1)
+      } else
+      if (m.content==="n") {
+        collector.stop(0)
+      } else {
+       message.channel.send("Please enter y or n");
+      }
+    })
+    collector.on('end', (collected, reason)=>{
+      if (reason===1) return;//Collector ended normally and called log function
+      else message.channel.send("Aborted");
+    })
+  }
   //To be continured...
 });
+
+bot.login(config.token);
