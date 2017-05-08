@@ -6,6 +6,7 @@ const config = require("./config.json");
 const tournament = challonge.createClient({
   apiKey: config.challonge
 });
+var db=require("./log.js");
 
 bot.on("ready", () => {
   //Log Time when bot is ready and set status
@@ -40,17 +41,28 @@ bot.on("message", message => {
     //help
   } else
   if (command==="log"){
-    if(isNaN(args[0])||isNaN(args[1])) return message.send("Use *log <stars> <percentage>");
-    var stars=parseInt(args[0]);
-    var percentage=parseInt(args[1]);
+    if(isNaN(args[0])||isNaN(args[1])||isNaN(args[2])||isNaN(args[3])||isNaN(args[4])) return message.send("Use *log <tourneyID> <seedNumberWinner> <seed Number Looser> <stars> <percentage>");
+    //parse params
+    var tourneyID=parseInt(args[0]);
+    var winnerSeed=parseInt(args[1]);
+    var looserSeed=parseInt(args[2]);
+    var stars=parseInt(args[3]);
+    var percentage=parseInt(args[4]);
+    var tourneyName;
+    if(tourneyID==91) tourneyName="TH9 Schedule 1";
+    if(tourneyID==92) tourneyName="TH9 Schedule 2";
+    if(tourneyID==101) tourneyName="TH10 Schedule 1";
+    if(tourneyID==102) tourneyName="TH10 Schedule 2";
+    if(tourneyID==111) tourneyName="TH11 Schedule 1";
+    if(tourneyID==112) tourneyName="TH11 Schedule 2";
     //Discord Message Collector waits for another message in this channel
-    message.channel.send("Is this your best attack?\n"+stars+" Stars and "+percentage+" Percent? (y/n)")
+    message.channel.send("Is this your best attack for the "+tourneyName+" tournament?\n"+stars+" Stars and "+percentage+" Percent? \n(y/n)")
     var collector = message.channel.createCollector(
       m => m.author.id==message.author.id,
       {time: 90000});//Automaticly quits after 90 seconds
     collector.on('collect', m =>{
       if (m.content==="y") {
-        //log results
+        log.log(message.channel,message.author.id,tourneyID,winnerSeed,looserSeed,stars,percentage);
         collector.stop(1)
       } else
       if (m.content==="n") {
