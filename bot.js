@@ -36,8 +36,8 @@ bot.on("message", message => {
   if(command==="help"){
     //help
   } else
-  if (command==="log"){
-    if(isNaN(args[0])||isNaN(args[1])||isNaN(args[2])||isNaN(args[3])||isNaN(args[4])) return message.send("Use *log <tourneyID> <seedNumberWinner> <seed Number Looser> <stars> <percentage>");
+  if (command==="report"){
+    if(isNaN(args[0])||isNaN(args[1])||isNaN(args[2])||isNaN(args[3])||isNaN(args[4])) return message.send("Use *report <tourneyID> <seedNumberWinner> <seed Number Looser> <stars> <percentage>");
     //parse params
     var tourneyID=parseInt(args[0]);
     var winnerSeed=parseInt(args[1]);
