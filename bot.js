@@ -1,12 +1,8 @@
-const challonge = require('challonge');
 const Discord = require("discord.js");
 const bot = new Discord.Client();
 var moment = require('moment');
 const config = require("./config.json");
-const tournament = challonge.createClient({
-  apiKey: config.challonge
-});
-var db=require("./log.js");
+var log=require("./log.js");
 
 bot.on("ready", () => {
   //Log Time when bot is ready and set status

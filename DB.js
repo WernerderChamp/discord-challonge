@@ -19,7 +19,7 @@ exports.getID=function(tourneyID,seedNumber,callback){
         }
         //Successfully connected
         console.log('connected as id ' + connection.threadId);
-        connection.query("SELECT * FROM ? WHERE seedNumber = ?",[tourneyID,seedNumber],function(err,results,fields){
+        connection.query('SELECT * FROM ? WHERE seedNumber = ?',[tourneyID,seedNumber],function(err,results,fields){
 
             connection.release();
             if(!err) {
@@ -46,7 +46,7 @@ exports.isAvaible=function(authorID,callback){
         }
         //Successfully connected
         console.log('connected as id ' + connection.threadId);
-        connection.query("SELECT * FROM ? WHERE discordID = ?",[tourneyID,seedNumber],function(err,results,fields){
+        connection.query('SELECT * FROM discord WHERE discordID = ?',[authorID],function(err,results,fields){
 
             connection.release();
             if(!err) {
@@ -56,12 +56,10 @@ exports.isAvaible=function(authorID,callback){
                 addMember(authorID);
                 return callback(true);
               }
-              if(results[0].reported==true){
-
+              if(results[0].reportable==true){
                 callback(true)
               }
               else callback(false);
-              callback(true);
             } else {
               console.log(err);
               callback(false);
@@ -69,7 +67,7 @@ exports.isAvaible=function(authorID,callback){
         });
 
         connection.on('error', function(err) {
-              callback("Error: "+err);
+              console.log("Error: "+err);
         });
   });
 }
@@ -81,21 +79,22 @@ function addMember(authorID,callback){
           callback("Error: "+err);
         }
         //Successfully connected
+
         console.log('connected as id ' + connection.threadId);
-        connection.query("INSERT INTO `discord` SET ?"),[authorID,true],function(err,rows){
+        connection.query('INSERT INTO `discord` SET ?',{discordID: authorID, reportable: true},function(err,rows){
             connection.release();
             if(!err) {
               //parsing stuff
               console.log("OK "+connection.threadId);
             }
-          }
+          });
         connection.on('error', function(err) {
-              callback("Error: "+err);
+              console.log("Error: "+err);
         });
   });
 }
 
-function setState(authorID,bool,callback){
+exports.setState=function(authorID,bool,callback){
   //Creates a database connection
     pool.getConnection(function(err,connection){
         if (err) {
@@ -103,15 +102,15 @@ function setState(authorID,bool,callback){
         }
         //Successfully connected
         console.log('connected as id ' + connection.threadId);
-        connection.query("UPDATE `discord` SET reported = ? WHERE discordID = ?"),[bool,authorID],function(err,rows){
+        connection.query('UPDATE `discord` SET reportable = ? WHERE discordID = ?',[bool,authorID],function(err,rows){
             connection.release();
             if(!err) {
               //parsing stuff
               console.log("OK "+connection.threadId);
             }
-          }
+          });
         connection.on('error', function(err) {
-              callback("Error: "+err);
+              console.log("Error: "+err);
         });
   });
 }
