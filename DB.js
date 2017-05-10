@@ -19,7 +19,7 @@ exports.getID=function(tourneyID,seedNumber,callback){
         }
         //Successfully connected
         console.log('connected as id ' + connection.threadId);
-        connection.query('SELECT * FROM `?` WHERE seedNumber = ?',[tourneyID,seedNumber],function(err,results,fields){
+        connection.query('SELECT * FROM `seeds` WHERE seedNumber = ? AND tourneyID = ?',[seedNumber,tourneyID],function(err,results,fields){
 
             connection.release();
             if(!err) {
@@ -46,7 +46,7 @@ exports.isAvaible=function(authorID,callback){
         }
         //Successfully connected
         console.log('connected as id ' + connection.threadId);
-        connection.query('SELECT * FROM discord WHERE discordID = ?',[authorID],function(err,results,fields){
+        connection.query('SELECT * FROM `discord` WHERE discordID = ?',[authorID],function(err,results,fields){
 
             connection.release();
             if(!err) {
@@ -81,11 +81,13 @@ function addMember(authorID,callback){
         //Successfully connected
 
         console.log('connected as id ' + connection.threadId);
-        connection.query('INSERT INTO `discord` SET ?',{discordID: authorID, report: true},function(err,rows){
+        connection.query('INSERT INTO `discord` SET ?',{discordID: authorID, report: 0},function(err,rows){
             connection.release();
             if(!err) {
               //parsing stuff
               console.log("OK "+connection.threadId);
+            } else{
+              console.log(err);
             }
           });
         connection.on('error', function(err) {
@@ -106,7 +108,86 @@ exports.setState=function(authorID,tourneyID,callback){
             connection.release();
             if(!err) {
               //parsing stuff
+              callback(true);
               console.log("OK "+connection.threadId);
+            } else {
+              console.log(err);
+            }
+          });
+        connection.on('error', function(err) {
+              console.log("Error: "+err);
+        });
+  });
+}
+
+exports.isalreadyLogged=function(matchID,tourneyID,callback){
+  //Creates a database connection
+    pool.getConnection(function(err,connection){
+        if (err) {
+          callback("Error: "+err);
+        }
+        //Successfully connected
+        console.log('connected as id ' + connection.threadId);
+        connection.query('SELECT * FROM `calls` WHERE matchID = ? AND tourneyID = ?',[matchID,tourneyID],function(err,results,fields){
+
+            connection.release();
+            if(!err) {
+              //parsing stuff
+              console.log("OK "+connection.threadId);
+              console.log("Checking if logged")
+              if(!results[0]) callback(false)
+              else callback(true);
+            } else {
+              console.log(err);
+            }
+        });
+        connection.on('error', function(err) {
+              console.log("Error: "+err);
+            });
+  });
+}
+exports.getReport=function(matchID,tourneyID,callback){
+  //Creates a database connection
+    pool.getConnection(function(err,connection){
+        if (err) {
+          callback("Error: "+err);
+        }
+        //Successfully connected
+        console.log('connected as id ' + connection.threadId);
+        connection.query('SELECT * FROM `calls` WHERE matchID = ? AND tourneyID = ?',[matchID,tourneyID],function(err,results,fields){
+
+            connection.release();
+            if(!err) {
+              //parsing stuff
+              console.log("OK "+connection.threadId);
+              callback(results[0]);
+          } else{
+            console.log(err);
+          }
+        });
+        connection.on('error', function(err) {
+              console.log("Error: "+err);
+        });
+  });
+}
+
+exports.report=function(matchID,tourneyID,id,winnerID,looserID,callback){
+  //Creates a database connection
+    pool.getConnection(function(err,connection){
+        if (err) {
+          callback("Error: "+err);
+        }
+        //Successfully connected
+
+        console.log('connected as id ' + connection.threadId);
+        connection.query('INSERT INTO `calls` SET ?',{matchID: matchID, tourneyID: tourneyID, reporterID: id, winnerID: winnerID, looserID: looserID},function(err,rows){
+            connection.release();
+            if(!err) {
+              //parsing stuff
+              callback(true);
+              console.log("OK "+connection.threadId);
+            } else{
+              console.log(err);
             }
           });
         connection.on('error', function(err) {
