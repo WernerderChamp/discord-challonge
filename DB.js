@@ -195,3 +195,53 @@ exports.report=function(matchID,tourneyID,id,winnerID,looserID,callback){
         });
   });
 }
+
+exports.deleteMatch=function(matchID,tourneyID,callback){
+  //Creates a database connection
+    pool.getConnection(function(err,connection){
+        if (err) {
+          callback("Error: "+err);
+        }
+        //Successfully connected
+
+        console.log('connected as id ' + connection.threadId);
+        connection.query('DELETE from `calls` WHERE matchID = ? AND tourneyID = ?',[matchID, tourneyID],function(err,rows){
+            connection.release();
+            if(!err) {
+              //parsing stuff
+              callback(true);
+              console.log("OK "+connection.threadId);
+            } else{
+              callback(0);
+              console.log(false);
+            }
+          });
+        connection.on('error', function(err) {
+              console.log("Error: "+err);
+        });
+  });
+}
+
+exports.reset=function(tourneyID,callback){
+  //Creates a database connection
+    pool.getConnection(function(err,connection){
+        if (err) {
+          callback("Error: "+err);
+        }
+        //Successfully connected
+        console.log('connected as id ' + connection.threadId);
+        connection.query('UPDATE `discord` SET report = 0 WHERE report = ?',[tourneyID],function(err,rows){
+            connection.release();
+            if(!err) {
+              //parsing stuff
+              callback(true);
+              console.log("OK "+connection.threadId);
+            } else {
+              console.log(err);
+            }
+          });
+        connection.on('error', function(err) {
+              console.log("Error: "+err);
+        });
+  });
+}
