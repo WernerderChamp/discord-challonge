@@ -26,21 +26,26 @@ exports.clear=function(){
 //--------------------------
 function dump(){
 tourneyURLs=["FCIT_TH9_S1","FCIT_TH9_S2","FCIT_TH10_S1","FCIT_TH10_S2","FCIT_TH11_S1","FCIT_TH11_S2"];
-tourneyID=[91,92,101,102,111,112]
+tourneyIDs=["91","92","101","102","111","112"];
 for(var j=0;j<tourneyURLs.length;j++){
   tourneyURL=tourneyURLs[j];
+  tourneyID=tourneyIDs[j];
 //start of actual dumping progress
-tournament.participants.index({
+	extract(tourneyURL,tourneyID);
+}
+}
+
+function extract(tourneyURL,tourneyID){
+	tournament.participants.index({
   id: tourneyURL,
   callback: (err, data) => {
     if(err) console.log(err);
     for(var i=0;data[i];i++){
       console.log(i);
-      save(data[i].participant.id,tourneyID[j],data[i].participant.seed)
+      save(data[i].participant.id,tourneyID,data[i].participant.seed)
     }
   }
 });
-}
 }
 
 function clear(callback){
