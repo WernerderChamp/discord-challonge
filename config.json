@@ -1,0 +1,8 @@
+{
+	"prefix" : "?",
+	"token" : "<discord Token>",
+	"challonge" : "<challonge Token>",
+	"liaison" : <ID of liaison channel (as number)>,
+	"password" : "<DB-password>",
+	"issue" : "<channel ID where to post issues>"
+}
